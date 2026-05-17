@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Problema de la Mochila con AG · Brian Maldonado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<nav class="detail-nav">
+  <a href="../index.html" class="nav-logo">B. Maldonado</a>
+  <a href="../index.html#logros" class="back-link">Volver a proyectos</a>
+</nav>
+<div class="detail-hero">
+  <p class="hero-tag">Computación Evolutiva · 2026 · Investigación</p>
+  <h1>Problema de la <em>mochila</em> con algoritmos genéticos</h1>
+  <div class="detail-meta"><span>📅 2026</span><span>🏷 CE · Optimización · Python</span></div>
+</div>
+<div class="detail-body">
+  <article class="detail-content fade-up">
+    <h2>Resumen</h2>
+    <p>El Problema de la Mochila (Knapsack Problem) consiste en seleccionar un subconjunto de ítems con pesos y valores dados, maximizando el valor total sin superar la capacidad de peso. En este proyecto se analizó el impacto de distintos operadores genéticos sobre la calidad de las soluciones y la velocidad de convergencia.</p>
+    <h2>Operadores comparados</h2>
+    <ul>
+      <li><strong>Cruce de un punto vs. dos puntos vs. uniforme:</strong> impacto en la exploración del espacio de soluciones.</li>
+      <li><strong>Mutación por bit-flip con distintas probabilidades (0.01, 0.05, 0.1):</strong> balance exploración/explotación.</li>
+      <li><strong>Selección por ruleta vs. torneo:</strong> presión selectiva y diversidad poblacional.</li>
+    </ul>
+    <figure class="detail-image">
+      <div class="img-placeholder">[ Gráficas comparativas de convergencia — agregar imagen ]</div>
+      <figcaption>Fig. 1 — Curvas de convergencia para cada combinación de operadores evaluada.</figcaption>
+    </figure>
+    <h2>Resultados principales</h2>
+    <p>El cruce uniforme combinado con selección por torneo y una probabilidad de mutación de 0.05 ofreció el mejor balance entre calidad de solución y velocidad de convergencia en las instancias evaluadas.</p>
+    <a href="https://github.com/FabrexG" target="_blank" class="paper-card">
+      <div class="paper-icon">⌥</div>
+      <div><h4>Repositorio en GitHub</h4><p>Código fuente y análisis comparativo completo</p></div>
+    </a>
+  </article>
+  <aside class="detail-sidebar fade-up">
+    <div class="sidebar-block">
+      <h3>Tecnologías</h3>
+      <span class="tag">Python</span><span class="tag">NumPy</span><span class="tag">Matplotlib</span>
+    </div>
+    <div class="sidebar-block">
+      <h3>Área</h3>
+      <span class="tag">Computación Evolutiva</span><span class="tag">Optimización combinatoria</span>
+    </div>
+  </aside>
+</div>
+<footer><span>© 2025 Brian Maldonado</span><span>IA · RNA · CE · Docencia</span></footer>
+<script>
+  const obs = new IntersectionObserver((e) => { e.forEach((el,i) => { if(el.isIntersecting){setTimeout(()=>el.target.classList.add('visible'),i*100);obs.unobserve(el.target);}}); },{threshold:0.1});
+  document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

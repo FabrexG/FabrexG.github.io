@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StyleApp · Brian Maldonado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<nav class="detail-nav">
+  <a href="../index.html" class="nav-logo">B. Maldonado</a>
+  <a href="../index.html#logros" class="back-link">Volver a proyectos</a>
+</nav>
+<div class="detail-hero">
+  <p class="hero-tag">Desarrollo móvil · 2026 · Aplicación</p>
+  <h1><em>StyleApp</em> — Recomendaciones de moda con IA</h1>
+  <div class="detail-meta">
+    <span>📅 2026</span>
+    <span>🏷 Android · IA · Fashion</span>
+  </div>
+</div>
+<div class="detail-body">
+  <article class="detail-content fade-up">
+    <h2>Resumen</h2>
+    <p>StyleApp es una aplicación móvil Android que genera recomendaciones personalizadas de atuendos integrando técnicas de Inteligencia Artificial con un sistema de gestión de guardarropa digital. El usuario registra las prendas que tiene y la app sugiere combinaciones según el clima, la ocasión y su historial de uso.</p>
+    <figure class="detail-image">
+      <div class="img-placeholder">[ Capturas de pantalla de la app — agregar imágenes ]</div>
+      <figcaption>Fig. 1 — Pantallas principales de StyleApp: guardarropa, recomendación diaria y detalle de atuendo.</figcaption>
+    </figure>
+    <h2>Arquitectura de la aplicación</h2>
+    <p>La app sigue una arquitectura MVVM (Model-View-ViewModel) con un módulo de IA encapsulado como servicio local. El módulo de recomendación utiliza un modelo de embeddings de imágenes para representar cada prenda y un sistema de reglas combinado con filtrado colaborativo para generar sugerencias.</p>
+    <ul>
+      <li><strong>Frontend:</strong> Android nativo (Kotlin) con Jetpack Compose.</li>
+      <li><strong>Módulo IA:</strong> TensorFlow Lite para inferencia on-device.</li>
+      <li><strong>Base de datos:</strong> Room (SQLite) para el catálogo de prendas.</li>
+      <li><strong>API de clima:</strong> integración con OpenWeatherMap para recomendaciones contextuales.</li>
+    </ul>
+    <figure class="detail-image">
+      <div class="img-placeholder">[ Diagrama de arquitectura — agregar imagen ]</div>
+      <figcaption>Fig. 2 — Diagrama de componentes: UI → ViewModel → Repositorio → Módulo IA / Base de datos.</figcaption>
+    </figure>
+    <h2>Módulo de recomendación</h2>
+    <p>Cada prenda se representa mediante un vector de embedding extraído con MobileNetV2 fine-tuneado sobre un dataset de moda. La compatibilidad entre prendas se calcula mediante similitud del coseno en el espacio de embeddings, penalizada por reglas de estilo (color, textura, formalidad).</p>
+    <h2>Estado del proyecto</h2>
+    <p>El proyecto se encuentra en desarrollo activo. La versión alfa con funcionalidad básica de gestión de guardarropa y recomendación está disponible para pruebas internas. Se planea integrar feedback del usuario para mejorar las recomendaciones de forma personalizada.</p>
+    <a href="https://github.com/FabrexG" target="_blank" class="paper-card">
+      <div class="paper-icon">⌥</div>
+      <div><h4>Repositorio en GitHub</h4><p>Código fuente y documentación del proyecto</p></div>
+    </a>
+  </article>
+  <aside class="detail-sidebar fade-up">
+    <div class="sidebar-block">
+      <h3>Estado</h3>
+      <div class="sidebar-stat"><div class="stat-number">α</div><div class="stat-label">Versión alfa activa</div></div>
+    </div>
+    <div class="sidebar-block">
+      <h3>Tecnologías</h3>
+      <span class="tag">Kotlin</span><span class="tag">Android</span><span class="tag">TensorFlow Lite</span><span class="tag">MobileNetV2</span><span class="tag">Room</span><span class="tag">Jetpack Compose</span>
+    </div>
+    <div class="sidebar-block">
+      <h3>Área</h3>
+      <span class="tag">Visión Computacional</span><span class="tag">Sistemas de recomendación</span><span class="tag">Desarrollo móvil</span>
+    </div>
+  </aside>
+</div>
+<footer><span>© 2025 Brian Maldonado</span><span>IA · RNA · CE · Docencia</span></footer>
+<script>
+  const obs = new IntersectionObserver((e) => { e.forEach((el,i) => { if(el.isIntersecting){setTimeout(()=>el.target.classList.add('visible'),i*100);obs.unobserve(el.target);}}); },{threshold:0.1});
+  document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

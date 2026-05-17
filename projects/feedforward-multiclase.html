@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clasificación Multiclase FeedForward · Brian Maldonado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<nav class="detail-nav">
+  <a href="../index.html" class="nav-logo">B. Maldonado</a>
+  <a href="../index.html#logros" class="back-link">Volver a proyectos</a>
+</nav>
+<div class="detail-hero">
+  <p class="hero-tag">Redes Neuronales · 2025 · Investigación</p>
+  <h1>Clasificación multiclase con redes <em>FeedForward</em> en PyTorch</h1>
+  <div class="detail-meta"><span>📅 2025</span><span>🏷 RNA · PyTorch · NLP</span></div>
+</div>
+<div class="detail-body">
+  <article class="detail-content fade-up">
+    <h2>Resumen</h2>
+    <p>Desarrollo de un sistema de clasificación multiclase de texto usando redes neuronales FeedForward implementadas en PyTorch. El estudio explora el impacto de distintas estrategias de preprocesamiento y representación vectorial sobre el desempeño del clasificador.</p>
+    <h2>Representaciones evaluadas</h2>
+    <ul>
+      <li><strong>TF-IDF:</strong> vectores dispersos con ponderación de frecuencia inversa de documento.</li>
+      <li><strong>Word Embeddings (Word2Vec / GloVe):</strong> representaciones densas pre-entrenadas, promediadas por documento.</li>
+      <li><strong>Embeddings entrenados desde cero:</strong> capa de embedding aprendida end-to-end.</li>
+    </ul>
+    <figure class="detail-image">
+      <div class="img-placeholder">[ Comparativa de accuracy por representación — agregar imagen ]</div>
+      <figcaption>Fig. 1 — Accuracy en validación para cada representación vectorial evaluada.</figcaption>
+    </figure>
+    <h2>Arquitectura de la red</h2>
+    <p>Se exploraron redes de 2 a 4 capas ocultas con activaciones ReLU, dropout para regularización y función de pérdida Cross-Entropy. La optimización se realizó con Adam.</p>
+    <h2>Resultados</h2>
+    <p>Los embeddings densos pre-entrenados superaron consistentemente a TF-IDF en el conjunto de validación. Los embeddings entrenados desde cero mostraron rendimiento competitivo solo con corpus de entrenamiento suficientemente grandes.</p>
+    <a href="https://github.com/FabrexG" target="_blank" class="paper-card">
+      <div class="paper-icon">⌥</div>
+      <div><h4>Repositorio en GitHub</h4><p>Notebooks y scripts de entrenamiento</p></div>
+    </a>
+  </article>
+  <aside class="detail-sidebar fade-up">
+    <div class="sidebar-block">
+      <h3>Tecnologías</h3>
+      <span class="tag">PyTorch</span><span class="tag">Python</span><span class="tag">Scikit-learn</span><span class="tag">Gensim</span>
+    </div>
+    <div class="sidebar-block">
+      <h3>Área</h3>
+      <span class="tag">Deep Learning</span><span class="tag">NLP</span><span class="tag">Clasificación de texto</span>
+    </div>
+  </aside>
+</div>
+<footer><span>© 2025 Brian Maldonado</span><span>IA · RNA · CE · Docencia</span></footer>
+<script>
+  const obs = new IntersectionObserver((e) => { e.forEach((el,i) => { if(el.isIntersecting){setTimeout(()=>el.target.classList.add('visible'),i*100);obs.unobserve(el.target);}}); },{threshold:0.1});
+  document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

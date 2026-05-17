@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Clasificación Discurso de Odio · Brian Maldonado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<nav class="detail-nav">
+  <a href="../index.html" class="nav-logo">B. Maldonado</a>
+  <a href="../index.html#logros" class="back-link">Volver a proyectos</a>
+</nav>
+<div class="detail-hero">
+  <p class="hero-tag">NLP · 2025 · Investigación</p>
+  <h1>Clasificación de <em>discurso de odio</em> en Twitter/X</h1>
+  <div class="detail-meta"><span>📅 2025</span><span>🏷 MLP · NLP · Español · Inglés</span></div>
+</div>
+<div class="detail-body">
+  <article class="detail-content fade-up">
+    <h2>Resumen</h2>
+    <p>Diseño de un pipeline completo de preprocesamiento y clasificación de discurso de odio en tweets, operando en dos idiomas (español e inglés). Se utilizaron redes neuronales multicapa (MLP) como clasificador principal.</p>
+    <h2>Pipeline de procesamiento</h2>
+    <ul>
+      <li>Limpieza de texto: eliminación de URLs, menciones, hashtags y caracteres especiales.</li>
+      <li>Normalización de idioma: detección automática y procesamiento diferenciado por idioma.</li>
+      <li>Vectorización con TF-IDF y embeddings multilingües.</li>
+      <li>Clasificación binaria (odio / no odio) con MLP de 3 capas ocultas.</li>
+    </ul>
+    <figure class="detail-image">
+      <div class="img-placeholder">[ Diagrama del pipeline — agregar imagen ]</div>
+      <figcaption>Fig. 1 — Pipeline completo desde tweet crudo hasta clasificación final.</figcaption>
+    </figure>
+    <h2>Reto del desbalance de clases</h2>
+    <p>Los datasets de discurso de odio presentan un fuerte desbalance (tipicamente 10-20% de muestras positivas). Se aplicaron técnicas de oversampling (SMOTE) y ponderación de clases en la función de pérdida para mitigar este efecto.</p>
+    <figure class="detail-image">
+      <div class="img-placeholder">[ Matriz de confusión — agregar imagen ]</div>
+      <figcaption>Fig. 2 — Matriz de confusión del modelo final sobre el conjunto de prueba.</figcaption>
+    </figure>
+    <a href="https://github.com/FabrexG" target="_blank" class="paper-card">
+      <div class="paper-icon">⌥</div>
+      <div><h4>Repositorio en GitHub</h4><p>Código del pipeline y modelos entrenados</p></div>
+    </a>
+  </article>
+  <aside class="detail-sidebar fade-up">
+    <div class="sidebar-block">
+      <h3>Idiomas</h3>
+      <span class="tag">Español</span><span class="tag">Inglés</span>
+    </div>
+    <div class="sidebar-block">
+      <h3>Tecnologías</h3>
+      <span class="tag">PyTorch</span><span class="tag">NLTK</span><span class="tag">Scikit-learn</span><span class="tag">Imbalanced-learn</span>
+    </div>
+    <div class="sidebar-block">
+      <h3>Área</h3>
+      <span class="tag">NLP</span><span class="tag">Deep Learning</span><span class="tag">Moderación de contenido</span>
+    </div>
+  </aside>
+</div>
+<footer><span>© 2025 Brian Maldonado</span><span>IA · RNA · CE · Docencia</span></footer>
+<script>
+  const obs = new IntersectionObserver((e) => { e.forEach((el,i) => { if(el.isIntersecting){setTimeout(()=>el.target.classList.add('visible'),i*100);obs.unobserve(el.target);}}); },{threshold:0.1});
+  document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

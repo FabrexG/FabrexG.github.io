@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TSP con Algoritmos Genéticos · Brian Maldonado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav class="detail-nav">
+  <a href="../index.html" class="nav-logo">B. Maldonado</a>
+  <a href="../index.html#logros" class="back-link">Volver a proyectos</a>
+</nav>
+
+<div class="detail-hero">
+  <p class="hero-tag">Computación Evolutiva · 2026 · Investigación</p>
+  <h1>Resolución del <em>problema del agente viajero</em> con algoritmos genéticos</h1>
+  <div class="detail-meta">
+    <span>📅 2026</span>
+    <span>🏷 CE · TSP · Python</span>
+  </div>
+</div>
+
+<div class="detail-body">
+
+  <article class="detail-content fade-up">
+
+    <h2>Resumen</h2>
+    <p>
+      El Problema del Agente Viajero (TSP, por sus siglas en inglés) es uno de los problemas de
+      optimización combinatoria más estudiados en la literatura. En este proyecto se implementó
+      un Algoritmo Genético (AG) para encontrar rutas altamente eficientes entre 20 ciudades,
+      manteniendo una ciudad de origen fija como restricción adicional.
+    </p>
+
+    <h2>Descripción del problema</h2>
+    <p>
+      Dado un conjunto de 20 ciudades con sus coordenadas geográficas, se busca la permutación
+      de ciudades que minimiza la distancia total del recorrido, partiendo siempre de la misma
+      ciudad de origen y retornando a ella al finalizar.
+    </p>
+
+    <figure class="detail-image">
+      <div class="img-placeholder">[ Mapa de ciudades y ruta encontrada — agregar imagen ]</div>
+      <figcaption>Fig. 1 — Visualización de la ruta óptima encontrada por el algoritmo genético sobre las 20 ciudades.</figcaption>
+    </figure>
+
+    <h2>Diseño del algoritmo genético</h2>
+    <ul>
+      <li><strong>Representación:</strong> permutación de índices de ciudades (excluyendo la ciudad fija de inicio/fin).</li>
+      <li><strong>Función de aptitud:</strong> inverso de la distancia euclidiana total del recorrido completo.</li>
+      <li><strong>Selección:</strong> torneo binario con presión selectiva ajustable.</li>
+      <li><strong>Cruce:</strong> Ordered Crossover (OX) para preservar el orden relativo de las ciudades.</li>
+      <li><strong>Mutación:</strong> swap mutation e inversión de subsecuencia con probabilidad 0.05.</li>
+      <li><strong>Reemplazo:</strong> elitismo del 5 % de la población.</li>
+    </ul>
+
+    <figure class="detail-image">
+      <div class="img-placeholder">[ Curva de convergencia del AG — agregar imagen ]</div>
+      <figcaption>Fig. 2 — Evolución de la distancia mínima por generación a lo largo de 500 generaciones.</figcaption>
+    </figure>
+
+    <h2>Experimentos y resultados</h2>
+    <p>
+      Se ejecutaron 30 corridas independientes con distintas semillas aleatorias para estimar la
+      distribución de resultados. Se reporta la mejor solución encontrada, la media y la desviación estándar.
+    </p>
+
+    <figure class="detail-image">
+      <div class="img-placeholder">[ Tabla de resultados / boxplot — agregar imagen ]</div>
+      <figcaption>Fig. 3 — Distribución de la distancia total en 30 corridas independientes.</figcaption>
+    </figure>
+
+    <h2>Conclusiones</h2>
+    <p>
+      El AG demostró encontrar soluciones de alta calidad de forma consistente. El uso del cruce OX
+      resultó crítico para evitar la generación de rutas inválidas. El elitismo garantizó que la
+      mejor solución nunca se perdiera entre generaciones.
+    </p>
+    <p>
+      Como trabajo futuro se propone comparar contra 2-opt local search y explorar operadores de
+      cruce específicos para TSP como PMX o Edge Assembly Crossover.
+    </p>
+
+    <a href="https://github.com/FabrexG" target="_blank" class="paper-card">
+      <div class="paper-icon">⌥</div>
+      <div>
+        <h4>Repositorio en GitHub</h4>
+        <p>Código fuente, notebooks y visualizaciones de la solución</p>
+      </div>
+    </a>
+
+  </article>
+
+  <aside class="detail-sidebar fade-up">
+    <div class="sidebar-block">
+      <h3>Problema</h3>
+      <div class="sidebar-stat">
+        <div class="stat-number">20</div>
+        <div class="stat-label">Ciudades</div>
+      </div>
+      <div class="sidebar-stat">
+        <div class="stat-number">30</div>
+        <div class="stat-label">Corridas independientes</div>
+      </div>
+    </div>
+    <div class="sidebar-block">
+      <h3>Tecnologías</h3>
+      <span class="tag">Python</span>
+      <span class="tag">NumPy</span>
+      <span class="tag">Matplotlib</span>
+      <span class="tag">PyGAD</span>
+    </div>
+    <div class="sidebar-block">
+      <h3>Área</h3>
+      <span class="tag">Computación Evolutiva</span>
+      <span class="tag">Optimización combinatoria</span>
+      <span class="tag">TSP</span>
+    </div>
+  </aside>
+
+</div>
+
+<footer>
+  <span>© 2025 Brian Maldonado</span>
+  <span>IA · RNA · CE · Docencia</span>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), i * 100); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
