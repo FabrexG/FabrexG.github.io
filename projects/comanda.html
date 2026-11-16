@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Comanda Gastronómica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Ocultar barra de scroll horizontal en categorías manteniendo funcionalidad táctil */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased pb-24 select-none">
+
+    <!-- Barra Superior -->
+    <header class="bg-slate-900 text-white sticky top-0 z-30 shadow-md">
+        <div class="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
+            <div>
+                <h1 class="text-lg font-bold tracking-tight flex items-center gap-2">
+                    <span>🍽️</span> Comanda Digital
+                </h1>
+                <p class="text-xs text-slate-400" id="status-indicator">Guardado localmente</p>
+            </div>
+            
+            <!-- Botones JSON -->
+            <div class="flex items-center gap-2">
+                <button onclick="exportarJSON()" title="Descargar respaldo JSON" class="bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-medium border border-slate-700 flex items-center gap-1 transition">
+                    <span>⬇️</span> JSON
+                </button>
+                <label title="Cargar archivo JSON" class="bg-slate-800 hover:bg-slate-700 active:bg-slate-600 text-slate-200 px-2.5 py-1.5 rounded-lg text-xs font-medium border border-slate-700 flex items-center gap-1 cursor-pointer transition">
+                    <span>⬆️</span> Cargar
+                    <input type="file" id="import-json" accept=".json" class="hidden" onchange="importarJSON(event)">
+                </label>
+            </div>
+        </div>
+
+        <!-- Buscador y Filtro de Categorías -->
+        <div class="bg-slate-800/90 px-4 pt-2 pb-3 border-t border-slate-700/60">
+            <div class="max-w-lg mx-auto space-y-2.5">
+                <input type="text" id="search-input" oninput="renderProductos()" placeholder="Buscar platillo o bebida..." 
+                    class="w-full bg-slate-900/90 text-white placeholder-slate-400 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-500">
+                
+                <!-- Tabs de Categorías -->
+                <div id="category-tabs" class="flex gap-2 overflow-x-auto no-scrollbar pb-0.5">
+                    <!-- Se llena dinámicamente con JS -->
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor Principal de Productos -->
+    <main class="max-w-lg mx-auto px-4 pt-4">
+        <div class="flex justify-between items-center mb-3">
+            <h2 id="current-category-title" class="text-sm font-bold uppercase tracking-wider text-slate-500">Todos los productos</h2>
+            <span id="product-count" class="text-xs bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full font-medium">0 items</span>
+        </div>
+
+        <!-- Lista de Tarjetas -->
+        <div id="products-list" class="space-y-3">
+            <!-- Se llena dinámicamente con JS -->
+        </div>
+    </main>
+
+    <!-- Barra Inferior Flotante (Resumen de Comanda + Botón Nuevo Producto) -->
+    <div class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 shadow-lg z-30">
+        <div class="max-w-lg mx-auto px-4 py-3 flex items-center justify-between gap-3">
+            <button onclick="abrirModalComanda()" class="flex-1 bg-slate-900 hover:bg-slate-800 active:scale-[0.99] text-white py-2.5 px-4 rounded-xl font-semibold text-sm flex items-center justify-between transition shadow-sm">
+                <span class="flex items-center gap-2">
+                    <span class="bg-amber-500 text-slate-950 text-xs font-bold px-2 py-0.5 rounded-full" id="order-badge">0</span>
+                    <span>Ver Comanda</span>
+                </span>
+                <span id="order-total-bar" class="font-mono text-amber-400">$0.00</span>
+            </button>
+
+            <button onclick="abrirModalProducto()" class="bg-amber-500 hover:bg-amber-600 active:scale-95 text-slate-950 p-2.5 rounded-xl font-bold shadow-sm transition flex items-center justify-center" title="Nuevo Producto">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL: Crear / Editar Producto -->
+    <div id="product-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full max-w-lg rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl animate-fade-in">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
+                <h3 id="modal-title" class="text-lg font-bold text-slate-800">Nuevo Producto</h3>
+                <button onclick="cerrarModalProducto()" class="text-slate-400 hover:text-slate-600 p-1 text-xl leading-none">&times;</button>
+            </div>
+
+            <form id="product-form" onsubmit="guardarProducto(event)" class="space-y-4">
+                <input type="hidden" id="prod-id">
+                
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Nombre del Platillo / Bebida</label>
+                    <input type="text" id="prod-name" required placeholder="Ej. Risotto de Hongos" 
+                        class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Precio ($)</label>
+                        <input type="number" id="prod-price" step="0.01" min="0" required placeholder="0.00" 
+                            class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Categoría</label>
+                        <input type="text" id="prod-category" list="category-suggestions" required placeholder="Ej. Platos Fuertes" 
+                            class="w-full border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                        <datalist id="category-suggestions">
+                            <option value="Entradas">
+                            <option value="Platos Fuertes">
+                            <option value="Guarniciones">
+                            <option value="Postres">
+                            <option value="Bebidas">
+                        </datalist>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase text-slate-500 mb-1">Notas / Ingredientes (Opcional)</label>
+                    <textarea id="prod-desc" rows="2" placeholder="Ej. Terminado con aceite de trufa y parmesano..." 
+                        class="w-full border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:outline-none focus:border-amber-500"></textarea>
+                </div>
+
+                <div class="pt-2 flex gap-2">
+                    <button type="button" onclick="cerrarModalProducto()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-semibold text-sm transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 py-2.5 rounded-xl font-bold text-sm shadow-sm transition">
+                        Guardar Producto
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Comanda Activa (Ticket) -->
+    <div id="order-modal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="bg-white w-full max-w-lg rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl max-h-[85vh] flex flex-col">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-3">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-800">🧾 Comanda Actual</h3>
+                    <input type="text" id="table-number" placeholder="Mesa / Alumno (Ej. Mesa 4)" 
+                        class="text-xs text-slate-600 border-b border-dashed border-slate-300 focus:outline-none focus:border-amber-500 mt-1 pb-0.5">
+                </div>
+                <button onclick="cerrarModalComanda()" class="text-slate-400 hover:text-slate-600 p-1 text-xl leading-none">&times;</button>
+            </div>
+
+            <div id="order-items-list" class="flex-1 overflow-y-auto space-y-2.5 py-2">
+                <!-- Items de la comanda -->
+            </div>
+
+            <div class="border-t border-slate-200 pt-3 mt-3 space-y-3">
+                <div class="flex justify-between items-center text-base font-bold">
+                    <span>Total de Comanda:</span>
+                    <span id="modal-order-total" class="font-mono text-lg text-slate-900">$0.00</span>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="limpiarComanda()" class="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl font-semibold text-sm transition">
+                        Vaciar
+                    </button>
+                    <button onclick="copiarComandaTexto()" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded-xl font-semibold text-sm transition">
+                        📋 Copiar Ticket
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificación Toast -->
+    <div id="toast" class="fixed top-20 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-medium px-4 py-2 rounded-full shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-50">
+        Mensaje
+    </div>
+
+    <script>
+        // --- ESTADO DE LA APLICACIÓN ---
+        const STORAGE_KEY = 'comanda_gastronomia_v1';
+        
+        // Datos iniciales de ejemplo para la primera vez que se abre
+        const defaultData = {
+            productos: [
+                { id: '1', nombre: 'Carpaccio de Res', precio: 145.00, categoria: 'Entradas', descripcion: 'Láminas de filete, alcaparras, parmesano y arúgula.' },
+                { id: '2', nombre: 'Crema de Poblano', precio: 95.00, categoria: 'Entradas', descripcion: 'Con granos de elote tatemados y juliana de tortilla.' },
+                { id: '3', nombre: 'Filete Mignon', precio: 320.00, categoria: 'Platos Fuertes', descripcion: 'Término medio, salsa demi-glace y puré rústico.' },
+                { id: '4', nombre: 'Salmón a las Finas Hierbas', precio: 280.00, categoria: 'Platos Fuertes', descripcion: 'Acompañado de espárragos salteados.' },
+                { id: '5', nombre: 'Coulant de Chocolate', precio: 110.00, categoria: 'Postres', descripcion: 'Volcán de chocolate amargo con helado de vainilla.' },
+                { id: '6', nombre: 'Limonada con Menta', precio: 45.00, categoria: 'Bebidas', descripcion: 'Natural, mineral o frappé.' }
+            ],
+            comanda: {} // { productoId: cantidad }
+        };
+
+        let appData = cargarDatos();
+        let categoriaActiva = 'Todas';
+
+        // --- PERSISTENCIA LOCAL Y JSON ---
+        function cargarDatos() {
+            const guardado = localStorage.getItem(STORAGE_KEY);
+            if (guardado) {
+                try {
+                    return JSON.parse(guardado);
+                } catch (e) {
+                    console.error('Error al leer localStorage', e);
+                }
+            }
+            return JSON.parse(JSON.stringify(defaultData));
+        }
+
+        function guardarDatos() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+            const indicator = document.getElementById('status-indicator');
+            const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            indicator.textContent = `Guardado (${hora})`;
+        }
+
+        function exportarJSON() {
+            const dataStr = JSON.stringify(appData, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            const fecha = new Date().toISOString().slice(0, 10);
+            a.href = url;
+            a.download = `comanda_menu_${fecha}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            mostrarToast('Archivo JSON descargado');
+        }
+
+        function importarJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported.productos)) {
+                        appData = {
+                            productos: imported.productos,
+                            comanda: imported.comanda || {}
+                        };
+                        categoriaActiva = 'Todas';
+                        guardarDatos();
+                        renderTodo();
+                        mostrarToast('Menú JSON cargado correctamente');
+                    } else {
+                        alert('El archivo JSON no tiene el formato válido de la comanda.');
+                    }
+                } catch (err) {
+                    alert('Error al leer el archivo JSON.');
+                }
+                event.target.value = ''; // Reset input
+            };
+            reader.readAsText(file);
+        }
+
+        // --- RENDERIZADO DE INTERFAZ ---
+        function renderTodo() {
+            renderCategorias();
+            renderProductos();
+            actualizarBarraComanda();
+        }
+
+        function renderCategorias() {
+            const tabsContainer = document.getElementById('category-tabs');
+            const datalist = document.getElementById('category-suggestions');
+            
+            // Extraer categorías únicas
+            const categoriasUnicas = ['Todas', ...new Set(appData.productos.map(p => p.categoria.trim()).filter(Boolean))];
+            
+            // Actualizar tabs
+            tabsContainer.innerHTML = categoriasUnicas.map(cat => {
+                const activa = cat === categoriaActiva;
+                const clases = activa 
+                    ? 'bg-amber-500 text-slate-950 font-bold shadow-xs' 
+                    : 'bg-slate-700/70 text-slate-300 hover:bg-slate-700 font-medium';
+                return `<button onclick="seleccionarCategoria('${cat.replace(/'/g, "\\'")}')" class="${clases} px-3.5 py-1.5 rounded-full text-xs whitespace-nowrap transition">${cat}</button>`;
+            }).join('');
+
+            // Actualizar sugerencias del formulario
+            datalist.innerHTML = categoriasUnicas
+                .filter(c => c !== 'Todas')
+                .map(c => `<option value="${c}">`)
+                .join('');
+        }
+
+        function seleccionarCategoria(cat) {
+            categoriaActiva = cat;
+            document.getElementById('current-category-title').textContent = cat === 'Todas' ? 'Todos los productos' : cat;
+            renderCategorias();
+            renderProductos();
+        }
+
+        function renderProductos() {
+            const lista = document.getElementById('products-list');
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+
+            const filtrados = appData.productos.filter(p => {
+                const coincideCat = categoriaActiva === 'Todas' || p.categoria.trim() === categoriaActiva;
+                const coincideTexto = p.nombre.toLowerCase().includes(query) || 
+                                      (p.descripcion && p.descripcion.toLowerCase().includes(query));
+                return coincideCat && coincideTexto;
+            });
+
+            document.getElementById('product-count').textContent = `${filtrados.length} ${filtrados.length === 1 ? 'item' : 'items'}`;
+
+            if (filtrados.length === 0) {
+                lista.innerHTML = `
+                    <div class="text-center py-12 bg-white rounded-2xl border border-dashed border-slate-300">
+                        <p class="text-slate-400 text-sm">No hay productos en esta sección.</p>
+                        <button onclick="abrirModalProducto()" class="mt-3 text-amber-600 font-semibold text-xs hover:underline">+ Agregar el primero</button>
+                    </div>`;
+                return;
+            }
+
+            lista.innerHTML = filtrados.map(prod => {
+                const cantEnComanda = appData.comanda[prod.id] || 0;
+                return `
+                <div class="bg-white rounded-2xl p-4 shadow-xs border border-slate-200/80 flex flex-col justify-between gap-3">
+                    <div class="flex justify-between items-start gap-2">
+                        <div class="flex-1">
+                            <span class="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 mb-1">
+                                ${prod.categoria}
+                            </span>
+                            <h3 class="font-bold text-slate-900 text-base leading-snug">${prod.nombre}</h3>
+                            ${prod.descripcion ? `<p class="text-xs text-slate-500 mt-1 line-clamp-2">${prod.descripcion}</p>` : ''}
+                        </div>
+                        <span class="font-mono font-bold text-base text-slate-900 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200/60">
+                            $${Number(prod.precio).toFixed(2)}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                        <!-- Acciones CRUD -->
+                        <div class="flex items-center gap-1">
+                            <button onclick="editarProducto('${prod.id}')" class="text-xs text-slate-500 hover:text-amber-600 px-2 py-1 rounded-lg hover:bg-slate-50 font-medium transition">
+                                ✏️ Editar
+                            </button>
+                            <button onclick="eliminarProducto('${prod.id}')" class="text-xs text-slate-400 hover:text-red-600 px-2 py-1 rounded-lg hover:bg-red-50 font-medium transition">
+                                🗑️ Eliminar
+                            </button>
+                        </div>
+
+                        <!-- Selector de Cantidad para Comanda -->
+                        <div class="flex items-center gap-2 bg-slate-100 rounded-xl p-1">
+                            ${cantEnComanda > 0 ? `
+                                <button onclick="modificarComanda('${prod.id}', -1)" class="w-7 h-7 rounded-lg bg-white text-slate-800 font-bold shadow-2xs active:scale-95 flex items-center justify-center">-</button>
+                                <span class="w-6 text-center text-sm font-bold text-slate-900">${cantEnComanda}</span>
+                            ` : ''}
+                            <button onclick="modificarComanda('${prod.id}', 1)" class="${cantEnComanda > 0 ? 'w-7 h-7 bg-amber-500 text-slate-950' : 'px-3 h-7 bg-slate-900 text-white text-xs'} rounded-lg font-bold shadow-2xs active:scale-95 flex items-center justify-center transition">
+                                ${cantEnComanda > 0 ? '+' : '+ Ordenar'}
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // --- CRUD DE PRODUCTOS ---
+        function abrirModalProducto() {
+            document.getElementById('product-form').reset();
+            document.getElementById('prod-id').value = '';
+            document.getElementById('modal-title').textContent = 'Nuevo Producto';
+            if (categoriaActiva !== 'Todas') {
+                document.getElementById('prod-category').value = categoriaActiva;
+            }
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        function cerrarModalProducto() {
+            document.getElementById('product-modal').classList.add('hidden');
+        }
+
+        function editarProducto(id) {
+            const prod = appData.productos.find(p => p.id === id);
+            if (!prod) return;
+
+            document.getElementById('prod-id').value = prod.id;
+            document.getElementById('prod-name').value = prod.nombre;
+            document.getElementById('prod-price').value = prod.precio;
+            document.getElementById('prod-category').value = prod.categoria;
+            document.getElementById('prod-desc').value = prod.descripcion || '';
+            document.getElementById('modal-title').textContent = 'Editar Producto';
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        function guardarProducto(event) {
+            event.preventDefault();
+            const id = document.getElementById('prod-id').value;
+            const nombre = document.getElementById('prod-name').value.trim();
+            const precio = parseFloat(document.getElementById('prod-price').value);
+            const categoria = document.getElementById('prod-category').value.trim();
+            const descripcion = document.getElementById('prod-desc').value.trim();
+
+            if (id) {
+                // Actualizar existente
+                const index = appData.productos.findIndex(p => p.id === id);
+                if (index !== -1) {
+                    appData.productos[index] = { id, nombre, precio, categoria, descripcion };
+                }
+                mostrarToast('Producto actualizado');
+            } else {
+                // Crear nuevo
+                const nuevoId = Date.now().toString();
+                appData.productos.push({ id: nuevoId, nombre, precio, categoria, descripcion });
+                mostrarToast('Producto agregado al menú');
+            }
+
+            guardarDatos();
+            cerrarModalProducto();
+            renderTodo();
+        }
+
+        function eliminarProducto(id) {
+            if (!confirm('¿Eliminar este producto del menú?')) return;
+            appData.productos = appData.productos.filter(p => p.id !== id);
+            delete appData.comanda[id];
+            guardarDatos();
+            renderTodo();
+            mostrarToast('Producto eliminado');
+        }
+
+        // --- GESTIÓN DE LA COMANDA (PEDIDO) ---
+        function modificarComanda(id, delta) {
+            const actual = appData.comanda[id] || 0;
+            const nuevo = actual + delta;
+            if (nuevo <= 0) {
+                delete appData.comanda[id];
+            } else {
+                appData.comanda[id] = nuevo;
+            }
+            guardarDatos();
+            renderProductos();
+            actualizarBarraComanda();
+            if (!document.getElementById('order-modal').classList.contains('hidden')) {
+                renderListaComandaModal();
+            }
+        }
+
+        function actualizarBarraComanda() {
+            let totalItems = 0;
+            let totalDinero = 0;
+
+            for (const [id, cant] of Object.entries(appData.comanda)) {
+                const prod = appData.productos.find(p => p.id === id);
+                if (prod) {
+                    totalItems += cant;
+                    totalDinero += prod.precio * cant;
+                }
+            }
+
+            document.getElementById('order-badge').textContent = totalItems;
+            document.getElementById('order-total-bar').textContent = `$${totalDinero.toFixed(2)}`;
+            document.getElementById('modal-order-total').textContent = `$${totalDinero.toFixed(2)}`;
+        }
+
+        function abrirModalComanda() {
+            renderListaComandaModal();
+            document.getElementById('order-modal').classList.remove('hidden');
+        }
+
+        function cerrarModalComanda() {
+            document.getElementById('order-modal').classList.add('hidden');
+        }
+
+        function renderListaComandaModal() {
+            const container = document.getElementById('order-items-list');
+            const entradas = Object.entries(appData.comanda);
+
+            if (entradas.length === 0) {
+                container.innerHTML = `<p class="text-center text-slate-400 text-sm py-8">Aún no has agregado platillos a esta comanda.</p>`;
+                return;
+            }
+
+            container.innerHTML = entradas.map(([id, cant]) => {
+                const prod = appData.productos.find(p => p.id === id);
+                if (!prod) return '';
+                const subtotal = prod.precio * cant;
+                return `
+                <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200/70">
+                    <div>
+                        <p class="font-bold text-sm text-slate-800">${prod.nombre}</p>
+                        <p class="text-xs text-slate-500">$${prod.precio.toFixed(2)} c/u &bull; <span class="font-semibold text-slate-700">$${subtotal.toFixed(2)}</span></p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="modificarComanda('${id}', -1)" class="w-7 h-7 rounded-lg bg-white border border-slate-300 font-bold text-slate-700">-</button>
+                        <span class="w-5 text-center text-sm font-bold">${cant}</span>
+                        <button onclick="modificarComanda('${id}', 1)" class="w-7 h-7 rounded-lg bg-amber-500 font-bold text-slate-950">+</button>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function limpiarComanda() {
+            if (Object.keys(appData.comanda).length === 0) return;
+            if (!confirm('¿Vaciar la comanda actual?')) return;
+            appData.comanda = {};
+            guardarDatos();
+            renderTodo();
+            renderListaComandaModal();
+            mostrarToast('Comanda vaciada');
+        }
+
+        function copiarComandaTexto() {
+            const entradas = Object.entries(appData.comanda);
+            if (entradas.length === 0) return mostrarToast('La comanda está vacía');
+
+            const mesa = document.getElementById('table-number').value.trim() || 'General';
+            let texto = `🍽️ *COMANDA - ${mesa.toUpperCase()}*\n------------------------\n`;
+            let total = 0;
+
+            entradas.forEach(([id, cant]) => {
+                const prod = appData.productos.find(p => p.id === id);
+                if (prod) {
+                    const sub = prod.precio * cant;
+                    total += sub;
+                    texto += `${cant}x ${prod.nombre} ($${sub.toFixed(2)})\n`;
+                }
+            });
+
+            texto += `------------------------\n*TOTAL: $${total.toFixed(2)}*`;
+            navigator.clipboard.writeText(texto).then(() => {
+                mostrarToast('Ticket copiado al portapapeles');
+            });
+        }
+
+        function mostrarToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.remove('opacity-0');
+            setTimeout(() => toast.classList.add('opacity-0'), 2200);
+        }
+
+        // Inicializar app
+        renderTodo();
+    </script>
+</body>
+</html>
